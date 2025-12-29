@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Restaurant Login</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f4f4;
+    padding: 40px;
+}
+.box {
+    background: #fff;
+    max-width: 400px;
+    margin: auto;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #aaa;
+}
+h2 {
+    text-align: center;
+}
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+}
+button {
+    cursor: pointer;
+}
+#error {
+    color: red;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Restaurant Login</h2>
+
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <p id="error"></p>
+</div>
+
+<script>
+/* =====================================================
+   SAFE ONE-TIME INITIALIZATION (RUNS ONLY FIRST TIME)
+   ===================================================== */
+if (!localStorage.getItem("initialized")) {
+    localStorage.setItem("initialized", "true");
+
+    if (!localStorage.getItem("items"))
+        localStorage.setItem("items", JSON.stringify([]));
+
+    if (!localStorage.getItem("bills"))
+        localStorage.setItem("bills", JSON.stringify({}));
+
+    if (!localStorage.getItem("history"))
+        localStorage.setItem("history", JSON.stringify([]));
+
+    if (!localStorage.getItem("parcelNo"))
+        localStorage.setItem("parcelNo", "0");
+
+    if (!localStorage.getItem("dineNo"))
+        localStorage.setItem("dineNo", "0");
+}
+
+/* =====================================================
+   CREATE DEFAULT USERS (ONLY IF NOT PRESENT)
+   ===================================================== */
+if (!localStorage.getItem("users")) {
+    localStorage.setItem("users", JSON.stringify([
+        { username: "manager", password: "manager123", role: "manager" },
+        { username: "cashier", password: "cashier123", role: "cashier" }
+    ]));
+}
+
+/* =====================================================
+   LOGIN FUNCTION
+   ===================================================== */
+function login() {
+    let u = username.value.trim();
+    let p = password.value.trim();
+
+    if (u === "" || p === "") {
+        error.innerText = "Please enter username and password";
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    let user = users.find(
+        usr => usr.username === u && usr.password === p
+    );
+
+    if (!user) {
+        error.innerText = "Invalid username or password";
+        return;
+    }
+
+    /* SAVE SESSION ONLY (DO NOT CLEAR DATA) */
+    localStorage.setItem("role", user.role);
+    localStorage.setItem("loggedUser", user.username);
+
+    /* REDIRECT BASED ON ROLE */
+    if (user.role === "manager") {
+        location.href = "manager.html";
+    } else {
+        location.href = "cashier.html";
+    }
+}
+</script>
+
+</body>
+</html>
